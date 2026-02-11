@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  ai-email:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - POLL_INTERVAL=60000
+      - SEND_ACKNOWLEDGMENT=false
+    volumes:
+      - ./keys:/app/keys
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # 可选：OpenClaw AI 助手
+  # openclaw:
+  #   image: openclaw/openclaw:latest
+  #   ports:
+  #     - "18789:18789"
+  #   environment:
+  #     - OPENCLAW_GATEWAY_MODE=local
+  #   volumes:
+  #     - ./openclaw:/openclaw
+  #   depends_on:
+  #     - ai-email

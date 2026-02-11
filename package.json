@@ -1,0 +1,55 @@
+{
+  "name": "ai-email",
+  "version": "1.0.0",
+  "description": "AI原生加密邮箱系统 - 让AI自主处理邮件",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "keygen": "node src/keygen.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "encrypt": "node src/cli.js encrypt",
+    "decrypt": "node src/cli.js decrypt"
+  },
+  "keywords": [
+    "ai",
+    "email",
+    "encryption",
+    "x25519",
+    "chacha20",
+    "gmail",
+    "imap",
+    "smtp"
+  ],
+  "author": "AI-Email Team",
+  "license": "MIT",
+  "dependencies": {
+    "@noble/ciphers": "^0.4.0",
+    "@noble/curves": "^1.2.0",
+    "@noble/hashes": "^1.3.2",
+    "imap-simple": "^5.1.0",
+    "nodemailer": "^6.9.7",
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.54.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ai-email.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ai-email/issues"
+  },
+  "homepage": "https://github.com/yourusername/ai-email"
+}
