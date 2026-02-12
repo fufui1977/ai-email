@@ -10,7 +10,7 @@
  * 4. 存储：(Salt) + (Ephemeral Public Key) + (Ciphertext)
  */
 
-import { x25519 } from '@noble/curves';
+import { x25519 } from '@noble/curves/ed25519';
 import crypto from 'crypto';
 
 /**

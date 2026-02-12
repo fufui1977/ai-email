@@ -6,7 +6,7 @@
  * - 私钥用于解密邮件，本地安全存储
  */
 
-import { x25519 } from '@noble/curves';
+import { x25519 } from '@noble/curves/ed25519';
 import { base64 } from '@noble/curves/abstract/utils';
 import crypto from 'crypto';
 import fs from 'fs';
