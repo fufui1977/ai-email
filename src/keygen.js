@@ -7,13 +7,26 @@
  */
 
 import { x25519 } from '@noble/curves/ed25519';
-import { base64 } from '@noble/curves/abstract/utils';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Base64 编码
+ */
+function base64Encode(data) {
+  return Buffer.from(data).toString('base64');
+}
+
+/**
+ * Base64 解码
+ */
+function base64Decode(str) {
+  return Buffer.from(str, 'base64');
+}
 
 /**
  * 生成随机盐
@@ -79,8 +92,8 @@ function generateKeyPair() {
   const publicKeyBytes = x25519.getPublicKey(privateKeyBytes);
   
   return {
-    publicKey: base64.encode(publicKeyBytes),
-    privateKey: base64.encode(privateKeyBytes)
+    publicKey: base64Encode(publicKeyBytes),
+    privateKey: base64Encode(privateKeyBytes)
   };
 }
 
@@ -144,8 +157,8 @@ function loadKeys(password, keysDir = './keys') {
  */
 function verifyKeyPair(publicKey, privateKey) {
   try {
-    const privateKeyBytes = base64.decode(privateKey);
-    const derivedPublicKey = base64.encode(x25519.getPublicKey(privateKeyBytes));
+    const privateKeyBytes = base64Decode(privateKey);
+    const derivedPublicKey = base64Encode(x25519.getPublicKey(privateKeyBytes));
     return derivedPublicKey === publicKey;
   } catch (error) {
     return false;
