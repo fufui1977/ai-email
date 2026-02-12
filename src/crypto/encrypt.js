@@ -10,9 +10,8 @@
  * 4. 存储：(Salt) + (Ephemeral Public Key) + (Ciphertext)
  */
 
-import { x25519 } from '@noble/curves/x25519';
-import { chaCha20poly1305 } from '@noble/ciphers/chacha';
-import { base64, randomBytes } from '@noble/curves/abstract/utils';
+import { x25519 } from '@noble/curves';
+import { base64 } from '@noble/curves/abstract/utils';
 import crypto from 'crypto';
 
 /**
@@ -39,9 +38,13 @@ export function encrypt(publicKeyBase64, plaintext) {
     : new TextEncoder().encode(plaintext);
   
   // 使用 ChaCha20-Poly1305 加密
-  const cipher = chaCha20poly1305(sharedKey);
   const nonce = crypto.randomBytes(12);
-  const ciphertext = cipher.encrypt(nonce, plaintextBytes);
+  const cipher = crypto.createCipheriv('chacha20-poly1305', sharedKey, nonce);
+  const ciphertext = Buffer.concat([
+    cipher.update(plaintextBytes),
+    cipher.final(),
+    cipher.getAuthTag()
+  ]);
   
   // 5. 返回加密结果
   return {
@@ -83,8 +86,9 @@ export function decrypt(privateKeyBase64, encryptedData) {
   const nonce = base64.decode(encryptedData.nonce);
   const ciphertext = base64.decode(encryptedData.ciphertext);
   
-  const cipher = chaCha20poly1305(sharedKey);
-  const plaintextBytes = cipher.decrypt(nonce, ciphertext);
+  const decipher = crypto.createDecipheriv('chacha20-poly1305', sharedKey, nonce);
+  decipher.setAuthTag(ciphertext.slice(-16));
+  const plaintextBytes = decipher.update(ciphertext.slice(0, -16));
   
   // 5. 返回明文
   return new TextDecoder().decode(plaintextBytes);
