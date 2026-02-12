@@ -11,8 +11,21 @@
  */
 
 import { x25519 } from '@noble/curves';
-import { base64 } from '@noble/curves/abstract/utils';
 import crypto from 'crypto';
+
+/**
+ * Base64 编码
+ */
+function base64Encode(data) {
+  return Buffer.from(data).toString('base64');
+}
+
+/**
+ * Base64 解码
+ */
+function base64Decode(str) {
+  return Buffer.from(str, 'base64');
+}
 
 /**
  * 使用 AI 公钥加密数据
@@ -23,7 +36,7 @@ import crypto from 'crypto';
  */
 export function encrypt(publicKeyBase64, plaintext) {
   // 1. 将公钥从 base64 解码
-  const publicKey = base64.decode(publicKeyBase64);
+  const publicKey = base64Decode(publicKeyBase64);
   
   // 2. 生成临时的密钥对
   const ephemeralPrivateKey = x25519.utils.randomPrivateKey();
@@ -49,16 +62,16 @@ export function encrypt(publicKeyBase64, plaintext) {
   // 5. 返回加密结果
   return {
     // 用于标识使用了哪个公钥加密
-    keyId: base64.encode(publicKey.slice(0, 8)),
+    keyId: base64Encode(publicKey.slice(0, 8)),
     
     // 临时的公钥（发送方）
-    ephemeralPublicKey: base64.encode(ephemeralPublicKey),
+    ephemeralPublicKey: base64Encode(ephemeralPublicKey),
     
     // 随机数
-    nonce: base64.encode(nonce),
+    nonce: base64Encode(nonce),
     
     // 密文
-    ciphertext: base64.encode(ciphertext),
+    ciphertext: base64Encode(ciphertext),
     
     // 加密时间戳
     timestamp: Date.now()
@@ -74,17 +87,17 @@ export function encrypt(publicKeyBase64, plaintext) {
  */
 export function decrypt(privateKeyBase64, encryptedData) {
   // 1. 解码私钥
-  const privateKey = base64.decode(privateKeyBase64);
+  const privateKey = base64Decode(privateKeyBase64);
   
   // 2. 解码 Ephemeral Public Key
-  const ephemeralPublicKey = base64.decode(encryptedData.ephemeralPublicKey);
+  const ephemeralPublicKey = base64Decode(encryptedData.ephemeralPublicKey);
   
   // 3. 计算共享密钥
   const sharedKey = x25519.getSharedSecret(privateKey, ephemeralPublicKey);
   
   // 4. 解密数据
-  const nonce = base64.decode(encryptedData.nonce);
-  const ciphertext = base64.decode(encryptedData.ciphertext);
+  const nonce = base64Decode(encryptedData.nonce);
+  const ciphertext = base64Decode(encryptedData.ciphertext);
   
   const decipher = crypto.createDecipheriv('chacha20-poly1305', sharedKey, nonce);
   decipher.setAuthTag(ciphertext.slice(-16));
@@ -159,7 +172,7 @@ export function validateEncryptedData(encryptedData) {
     
     // 验证是否为有效的 base64
     try {
-      const decoded = base64.decode(encryptedData[field]);
+      const decoded = base64Decode(encryptedData[field]);
       if (decoded.length === 0) {
         return false;
       }
